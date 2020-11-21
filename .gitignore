@@ -110,6 +110,8 @@ go.sum
 
 # Ignore protobuf generated code
 *.pb.go
+*_pb.js
+*_pb.d.ts
 
 # Ignore secrets
 secrets/

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HelloWorldService } from './hello-world.service';
+import { Deployment } from 'src/types/deployment_pb';
+import { DeploymentService } from './deployment.service';
 
 @Component({
   selector: 'app-root',
@@ -8,15 +9,13 @@ import { HelloWorldService } from './hello-world.service';
 })
 export class AppComponent implements OnInit {
   title = 'webapp';
-  constructor(private helloWorld: HelloWorldService) { }
+  constructor(private deploymentService: DeploymentService) { }
 
   ngOnInit(): void {
-    this.helloWorld.getTitle()
-      .subscribe(data => {
-        this.title = data.title;
-        console.log(this.title);
-      });
+    const deployment = new Deployment();
 
-    console.log(this.title);
+    deployment.setName('Test Deployment From Angular');
+    console.log(deployment);
+    this.deploymentService.addDeployment(deployment);
   }
 }
