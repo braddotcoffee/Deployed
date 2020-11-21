@@ -39,6 +39,13 @@ func Connect() error {
 	return nil
 }
 
+// Disconnect closes connection to firebase
+func Disconnect() {
+	client.Close()
+	client = nil
+	ctx = nil
+}
+
 // AddDeployment adds new deployment to the firestore
 func AddDeployment(deployment *Deployment) error {
 	_, _, err := client.Collection("deployments").Add(ctx, deployment)
