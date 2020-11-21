@@ -1,32 +1,35 @@
 package main
 
 import (
+	"deployed/datastore"
 	"deployed/utils"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
-
-	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 )
 
 func main() {
-	r := mux.NewRouter()
+	/*
+		r := mux.NewRouter()
 
-	r.HandleFunc("/hello-world", helloWorld)
+		r.HandleFunc("/hello-world", helloWorld)
 
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"https://app.brad.coffee"},
-	})
-	handler := c.Handler(r)
+		c := cors.New(cors.Options{
+			AllowedOrigins: []string{"https://app.brad.coffee"},
+		})
+		handler := c.Handler(r)
 
-	srv := &http.Server{
-		Handler: handler,
-		Addr:    ":" + os.Getenv("PORT"),
+		srv := &http.Server{
+			Handler: handler,
+			Addr:    ":" + os.Getenv("PORT"),
+		}
+
+		log.Fatal(srv.ListenAndServe())
+	*/
+	datastore.Connect()
+	deployment := datastore.Deployment{
+		Name: "Test Deployment 2",
 	}
-
-	log.Fatal(srv.ListenAndServe())
+	datastore.AddDeployment(&deployment)
 }
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,8 @@
+syntax = "proto3";
+package datastore;
+
+option go_package = "backend/datastore";
+
+message Deployment {
+    string name = 1;
+}

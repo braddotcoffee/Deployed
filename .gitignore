@@ -107,3 +107,6 @@ dist
 .go-version
 gin-bin
 go.sum
+
+# Ignore secrets
+secrets/
