@@ -1,8 +1,22 @@
 syntax = "proto3";
 package datastore;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "backend/datastore";
 
 message Deployment {
     string name = 1;
+    string repository = 2;
+    string dockerfile = 3;
+    string commit = 4;
+    google.protobuf.Timestamp last_deploy = 5;
+
+    enum DeployStatus {
+        NOT_STARTED = 0;
+        IN_PROGRESS = 1;
+        COMPLETE = 2;
+        ERROR = 3;
+    }
+    DeployStatus status = 6;
 }
