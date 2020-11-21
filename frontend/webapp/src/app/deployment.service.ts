@@ -12,7 +12,6 @@ export class DeploymentService {
   constructor(private http: HttpClient) { }
 
   addDeployment(deployment: Deployment): void {
-    console.log(deployment.serializeBinary());
-    this.http.post(`${environment.backendUrl}/add-deployment`, deployment.serializeBinary()).subscribe();
+    this.http.post(`${environment.backendUrl}/add-deployment`, deployment.toObject()).subscribe();
   }
 }

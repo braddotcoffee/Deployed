@@ -15,7 +15,6 @@ export class AppComponent implements OnInit {
     const deployment = new Deployment();
 
     deployment.setName('Test Deployment From Angular');
-    console.log(deployment);
     this.deploymentService.addDeployment(deployment);
   }
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"deployed/datastore"
 	"deployed/utils"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,13 +12,13 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"google.golang.org/protobuf/proto"
 )
 
 func main() {
 	r := mux.NewRouter()
+	datastore.Connect()
 
-	r.HandleFunc("/add-deployment", addDeployment).Methods("POST")
+	r.HandleFunc("/add-deployment", addDeployment)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},
@@ -57,8 +58,7 @@ func addDeployment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	deployment := &datastore.Deployment{}
-	log.Print(body)
-	if err := proto.Unmarshal(body, deployment); err != nil {
+	if err := json.Unmarshal(body, deployment); err != nil {
 		log.Fatalln("Failed to parse deployment:", err)
 		utils.RespondWithError(w, http.StatusBadRequest, "Unable to parse deployment")
 	}
