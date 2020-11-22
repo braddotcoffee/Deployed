@@ -14,11 +14,18 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { StepperFormInputComponent } from './forms/stepper-forms/stepper-form-input/stepper-form-input.component';
+import { StepperFormStepComponent } from './forms/stepper-forms/stepper-form-step/stepper-form-step.component';
+import { StepperFormComponent } from './forms/stepper-forms/stepper-form/stepper-form.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DeploymentFormComponent
+    DeploymentFormComponent,
+    StepperFormInputComponent,
+    StepperFormStepComponent,
+    StepperFormComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +39,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonModule,
     MatCardModule,
     MatDividerModule,
+    MatIconModule
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]
