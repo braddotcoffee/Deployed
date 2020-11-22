@@ -19,4 +19,5 @@ message Deployment {
         ERROR = 3;
     }
     DeployStatus status = 6;
+    string domain = 7;
 }

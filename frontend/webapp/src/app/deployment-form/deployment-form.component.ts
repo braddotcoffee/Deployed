@@ -14,6 +14,7 @@ export class DeploymentFormComponent implements OnInit {
   nameFormGroup: FormGroup = new FormGroup({});
   repositoryFormGroup: FormGroup = new FormGroup({});
   dockerfileFormGroup: FormGroup = new FormGroup({});
+  domainFormGroup: FormGroup = new FormGroup({});
 
   steps: StepperFormStep[] = [];
 
@@ -28,6 +29,9 @@ export class DeploymentFormComponent implements OnInit {
     });
     this.dockerfileFormGroup = this.formBuilder.group({
       dockerfile: [this.deployment.getDockerfile(), Validators.required]
+    });
+    this.domainFormGroup = this.formBuilder.group({
+      domain: [this.deployment.getDomain(), Validators.required]
     });
     this.steps = [
       {
@@ -56,6 +60,15 @@ export class DeploymentFormComponent implements OnInit {
           controlName: 'dockerfile',
           placeholder: '/path/to/Dockerfile'
         }]
+      },
+      {
+        formGroup: this.domainFormGroup,
+        stepLabel: 'Host your project',
+        inputs: [{
+          label: 'Host domain',
+          controlName: 'domain',
+          placeholder: 'https://some.domain.com'
+        }]
       }
     ];
   }
@@ -64,6 +77,7 @@ export class DeploymentFormComponent implements OnInit {
     this.deployment.setName(this.nameFormGroup.get('name')?.value);
     this.deployment.setRepository(this.repositoryFormGroup.get('repository')?.value);
     this.deployment.setDockerfile(this.dockerfileFormGroup.get('dockerfile')?.value);
+    this.deployment.setDomain(this.domainFormGroup.get('domain')?.value);
     this.deploymentService.addDeployment(this.deployment);
   }
 }
