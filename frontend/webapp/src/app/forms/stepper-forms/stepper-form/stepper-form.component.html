@@ -1,7 +1,7 @@
 <mat-horizontal-stepper #stepper>
   <mat-step *ngFor="let step of steps" [stepControl]="step.formGroup">
     <form [formGroup]="step.formGroup">
-        <ng-template matStepLabel>Name your application</ng-template>
+        <ng-template matStepLabel>{{step.stepLabel}}</ng-template>
         <app-stepper-form-step
         [formGroup]="step.formGroup"
         [inputs]="step.inputs"></app-stepper-form-step>
