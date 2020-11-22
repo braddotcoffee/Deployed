@@ -1,0 +1,54 @@
+<div class="container">
+<mat-horizontal-stepper #stepper>
+  <mat-step [stepControl]="nameFormGroup">
+    <form [formGroup]="nameFormGroup">
+      <ng-template matStepLabel>Name your application</ng-template>
+      <mat-form-field>
+        <mat-label>Application Name</mat-label>
+        <input matInput placeholder="AwesomeNewApp" formControlName="name" required>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="repositoryFormGroup">
+    <form [formGroup]="repositoryFormGroup">
+      <ng-template matStepLabel>Link to your repository</ng-template>
+      <mat-form-field>
+        <mat-label>Repository URL</mat-label>
+        <input matInput formControlName="repository" required>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="dockerfileFormGroup">
+    <form [formGroup]="dockerfileFormGroup">
+      <ng-template matStepLabel>Reference your Dockerfile</ng-template>
+      <mat-form-field>
+        <mat-label>Dockerfile path</mat-label>
+        <input matInput formControlName="dockerfile" required>
+      </mat-form-field>
+      <div>
+        <button mat-raised-button color="primary" matStepperNext>Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Review</ng-template>
+    <mat-card>
+        <mat-card-header class="review">
+            <mat-card-title>Review</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            Test
+        </mat-card-content>
+    </mat-card>
+    <div class="container">
+      <button mat-raised-button color="primary" class="submit" (click)="onSubmit()">Submit</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper>
+</div>

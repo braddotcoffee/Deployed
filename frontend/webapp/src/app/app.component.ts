@@ -5,16 +5,12 @@ import { DeploymentService } from './deployment.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
   title = 'webapp';
   constructor(private deploymentService: DeploymentService) { }
 
   ngOnInit(): void {
-    const deployment = new Deployment();
-
-    deployment.setName('Test Deployment From Angular');
-    this.deploymentService.addDeployment(deployment);
   }
 }
