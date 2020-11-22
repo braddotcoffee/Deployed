@@ -19,6 +19,9 @@ import { StepperFormStepComponent } from './forms/stepper-forms/stepper-form-ste
 import { StepperFormComponent } from './forms/stepper-forms/stepper-form/stepper-form.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
+import { ToolbarComponent } from './toolbar/toolbar.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
 
 
 @NgModule({
@@ -27,7 +30,8 @@ import { MatTableModule } from '@angular/material/table';
     DeploymentFormComponent,
     StepperFormInputComponent,
     StepperFormStepComponent,
-    StepperFormComponent
+    StepperFormComponent,
+    ToolbarComponent
   ],
   imports: [
     BrowserModule,
@@ -43,6 +47,7 @@ import { MatTableModule } from '@angular/material/table';
     MatDividerModule,
     MatIconModule,
     MatTableModule,
+    MatToolbarModule,
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]
