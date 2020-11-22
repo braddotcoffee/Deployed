@@ -4,7 +4,6 @@ import (
 	"deployed/datastore"
 	"deployed/utils"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -31,23 +30,6 @@ func main() {
 	}
 
 	log.Fatal(srv.ListenAndServe())
-}
-
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	var data = struct {
-		Title string `json:"title"`
-	}{
-		Title: "Golang + Angular Starter Kit",
-	}
-
-	jsonBytes, err := utils.StructToJSON(data)
-	if err != nil {
-		fmt.Print(err)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonBytes)
-	return
 }
 
 func addDeployment(w http.ResponseWriter, r *http.Request) {

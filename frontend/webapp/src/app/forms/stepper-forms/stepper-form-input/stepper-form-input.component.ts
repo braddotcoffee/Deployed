@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { StepperFormInput } from '../stepper-form-types';
 
 @Component({
   selector: 'app-stepper-form-input',
@@ -7,9 +8,8 @@ import { FormGroup } from '@angular/forms';
   styleUrls: ['./stepper-form-input.component.scss']
 })
 export class StepperFormInputComponent implements OnInit {
-  @Input() controlName: string | undefined;
-  @Input() label: string | undefined;
-  @Input() formGroup: FormGroup = new FormGroup({});
+  @Input() stepperInput!: StepperFormInput;
+  @Input() formGroup!: FormGroup;
 
   constructor() { }
 

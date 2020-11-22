@@ -1,7 +1,6 @@
 <div class="flexbox">
     <app-stepper-form-input  *ngFor="let input of inputs"
-        [label]="input.label"
-        [controlName]="input.controlName" 
+        [stepperInput]="input"
         [formGroup]='formGroup'></app-stepper-form-input>
 </div>
 

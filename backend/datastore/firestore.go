@@ -48,7 +48,7 @@ func Disconnect() {
 
 // AddDeployment adds new deployment to the firestore
 func AddDeployment(deployment *Deployment) error {
-	_, _, err := client.Collection("deployments").Add(ctx, deployment)
+	_, err := client.Collection("deployments").Doc(deployment.GetName()).Set(ctx, deployment)
 	if err != nil {
 		log.Fatalf("Failed adding new deployment")
 	}
