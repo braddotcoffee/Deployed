@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Deployment } from 'src/types/deployment_pb';
-import { DeploymentService } from './deployment.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -9,8 +8,9 @@ import { DeploymentService } from './deployment.service';
 })
 export class AppComponent implements OnInit {
   title = 'webapp';
-  constructor(private deploymentService: DeploymentService) { }
+  constructor(private titleService: Title) { }
 
   ngOnInit(): void {
+    this.titleService.setTitle('Deployed');
   }
 }

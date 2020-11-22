@@ -28,7 +28,7 @@ export class StepperFormComponent implements OnInit {
   }
 
   buildReviewStructure(): Preview[] {
-    const previews: Preview[] = []
+    const previews: Preview[] = [];
     this.steps.forEach((step) => {
       step.inputs.forEach((input) => {
         previews.push(
@@ -36,7 +36,7 @@ export class StepperFormComponent implements OnInit {
             name: input.label,
             value: step.formGroup.get(input.controlName)?.value
           }
-        )
+        );
       });
     });
     return previews;
