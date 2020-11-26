@@ -4,16 +4,21 @@ go 1.15
 
 require (
 	cloud.google.com/go/firestore v1.3.0
-	cloud.google.com/go/storage v1.12.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
-	github.com/go-git/go-git v4.7.0+incompatible
+	github.com/containerd/continuity v0.0.0-20201119173150-04c754faca46 // indirect
+	github.com/docker/distribution v2.7.1+incompatible // indirect
+	github.com/docker/docker v17.12.1-ce+incompatible
+	github.com/docker/go-connections v0.4.0 // indirect
+	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-git/go-git/v5 v5.2.0
+	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
+	github.com/mitchellh/go-homedir v1.1.0
+	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/rs/cors v1.7.0
-	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58 // indirect
+	github.com/sirupsen/logrus v1.7.0 // indirect
 	google.golang.org/api v0.35.0
-	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/src-d/go-git.v4 v4.13.1 // indirect
 )

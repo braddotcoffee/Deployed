@@ -1,4 +1,4 @@
-package utils
+package git
 
 import (
 	"log"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	"github.com/mitchellh/go-homedir"
 )
 
 var privateKeyFile = "/root/.ssh/id_rsa"
@@ -26,6 +27,7 @@ func getPublicKeys() (*ssh.PublicKeys, error) {
 // CloneRepoToLocation will clone the repository to the specified path on
 // the server
 func CloneRepoToLocation(repository string, location string) error {
+	location, _ = homedir.Expand(location)
 	publicKeys, err := getPublicKeys()
 	if err != nil {
 		return err

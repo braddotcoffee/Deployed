@@ -2,6 +2,8 @@ package main
 
 import (
 	"deployed/datastore"
+	"deployed/docker"
+	"deployed/git"
 	"deployed/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -28,6 +30,9 @@ func main() {
 		Handler: handler,
 		Addr:    ":" + os.Getenv("PORT"),
 	}
+
+	git.CloneRepoToLocation("git@github.com:crscillitoe/DiscordBotsToCleanseYourSoul.git", "~/DiscordBots")
+	docker.BuildImage("~/DiscordBots/CountBot/Dockerfile")
 
 	log.Fatal(srv.ListenAndServe())
 }
