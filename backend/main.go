@@ -32,7 +32,7 @@ func main() {
 	}
 
 	git.CloneRepoToLocation("git@github.com:crscillitoe/DiscordBotsToCleanseYourSoul.git", "~/DiscordBots")
-	docker.BuildImage("~/DiscordBots/CountBot/Dockerfile")
+	docker.BuildImage("~/DiscordBots/MarkovBot/Dockerfile", "test:latest")
 
 	log.Fatal(srv.ListenAndServe())
 }
