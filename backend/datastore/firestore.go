@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"context"
+	"deployed/docker"
 	"log"
 
 	"cloud.google.com/go/firestore"
@@ -51,6 +52,15 @@ func AddDeployment(deployment *Deployment) error {
 	_, err := client.Collection("deployments").Doc(deployment.GetName()).Set(ctx, deployment)
 	if err != nil {
 		log.Fatalf("Failed adding new deployment")
+	}
+	return err
+}
+
+// AddContainer adds new container to the firestore
+func AddContainer(application string, metadata *docker.ContainerMetadata) error {
+	_, err := client.Collection("containers").Doc(application).Set(ctx, metadata)
+	if err != nil {
+		log.Fatalf("Failed adding container")
 	}
 	return err
 }

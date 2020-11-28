@@ -32,8 +32,19 @@ func main() {
 	}
 
 	git.CloneRepoToLocation("git@github.com:crscillitoe/DiscordBotsToCleanseYourSoul.git", "~/DiscordBots")
-	err := docker.BuildImage("~/DiscordBots/CountBot/Dockerfile", "test:latest")
-	log.Print(err.Error())
+	err := docker.Connect()
+	if err != nil {
+		log.Fatal("Failed to initialize docker client")
+	}
+	err = docker.BuildImage("~/DiscordBots/MarkovBot/Dockerfile", "test", "latest")
+	if err != nil {
+		log.Fatal("Failed to build image")
+	}
+
+	_, err = docker.StartContainer("test", "123456")
+	if err != nil {
+		log.Fatalf("Failed to start container: %s\n", err.Error())
+	}
 
 	log.Fatal(srv.ListenAndServe())
 }

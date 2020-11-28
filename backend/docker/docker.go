@@ -10,11 +10,15 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/docker/docker/pkg/jsonmessage"
 	"github.com/mitchellh/go-homedir"
 )
+
+var dockerClient *client.Client = nil
+var ctx context.Context = nil
 
 func getBuildContext(buildPath string) (io.Reader, error) {
 	ctx, err := archive.TarWithOptions(buildPath, &archive.TarOptions{})
@@ -25,14 +29,16 @@ func getBuildContext(buildPath string) (io.Reader, error) {
 	return ctx, err
 }
 
+// Connect initializes docker client
+func Connect() error {
+	var err error
+	ctx = context.Background()
+	dockerClient, err = client.NewEnvClient()
+	return err
+}
+
 // BuildImage builds docker image from dockerfile path passed in
-func BuildImage(dockerfile string, imageName string) error {
-	ctx := context.Background()
-	dockerClient, err := client.NewEnvClient()
-	if err != nil {
-		log.Fatalf("Unable to init client: %s\n", err.Error())
-		return err
-	}
+func BuildImage(dockerfile string, imageName string, imageTag string) error {
 	dockerfile, _ = homedir.Expand(dockerfile)
 	dir := path.Dir(dockerfile)
 	dockerfile = path.Base(dockerfile)
@@ -41,9 +47,9 @@ func BuildImage(dockerfile string, imageName string) error {
 		return err
 	}
 
-	cleanedName := strings.ToLower(strings.TrimSpace(imageName))
+	cleanedName := cleanImageName(imageName)
 	resp, err := dockerClient.ImageBuild(ctx, buildContext, types.ImageBuildOptions{
-		Tags:           []string{cleanedName},
+		Tags:           []string{cleanedName + ":" + imageTag},
 		Dockerfile:     dockerfile,
 		Remove:         true,
 		ForceRemove:    true,
@@ -56,6 +62,43 @@ func BuildImage(dockerfile string, imageName string) error {
 	}
 
 	return readStreamForStatus(resp.Body)
+}
+
+// StartContainer starts a new container with the specified image
+func StartContainer(imageName string, uniqueID string) (*ContainerMetadata, error) {
+	cleanedName := cleanImageName(imageName)
+	containerConfig := container.Config{
+		Image: cleanedName,
+	}
+	hostConfig := container.HostConfig{
+		PublishAllPorts: true,
+	}
+
+	containerMetadata := ContainerMetadata{
+		Name: cleanedName + uniqueID,
+	}
+	created, err := dockerClient.ContainerCreate(ctx, &containerConfig, &hostConfig, nil, containerMetadata.Name)
+	if err != nil {
+		return nil, err
+	}
+	containerMetadata.ID = created.ID
+
+	err = dockerClient.ContainerStart(ctx, containerMetadata.ID, types.ContainerStartOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	inspection, err := dockerClient.ContainerInspect(ctx, containerMetadata.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for port := range inspection.NetworkSettings.Ports {
+		containerMetadata.Port = &inspection.NetworkSettings.Ports[port][0]
+		break
+	}
+
+	return &containerMetadata, nil
 }
 
 func readStreamForStatus(daemonStream io.ReadCloser) error {
@@ -76,4 +119,8 @@ func readStreamForStatus(daemonStream io.ReadCloser) error {
 		}
 	}
 	return nil
+}
+
+func cleanImageName(imageName string) string {
+	return strings.ToLower(strings.TrimSpace(imageName))
 }
