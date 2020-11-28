@@ -1,6 +1,7 @@
 package nginx
 
 import (
+	"deployed/hostconfiguration"
 	"fmt"
 )
 
@@ -36,7 +37,7 @@ func buildPortForwardSection(domain string, port string) string {
 
 // BuildSitesEnabled returns the nginx config file
 // to write to /etc/nginx/sites-enabled
-func BuildSitesEnabled(domains []DomainConfiguration) string {
+func BuildSitesEnabled(domains []hostconfiguration.DomainConfiguration) string {
 	fileContents := buildFileForwardSection()
 	for _, domainConfig := range domains {
 		fileContents += buildPortForwardSection(domainConfig.Domain, domainConfig.Port)
