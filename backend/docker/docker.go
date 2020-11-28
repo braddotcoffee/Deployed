@@ -3,9 +3,9 @@ package docker
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
-	"os"
 	"path"
 	"strings"
 
@@ -13,7 +13,6 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
 	"github.com/docker/docker/pkg/jsonmessage"
-	"github.com/docker/docker/pkg/term"
 	"github.com/mitchellh/go-homedir"
 )
 
@@ -27,19 +26,19 @@ func getBuildContext(buildPath string) (io.Reader, error) {
 }
 
 // BuildImage builds docker image from dockerfile path passed in
-func BuildImage(dockerfile string, imageName string) (types.ImageBuildResponse, error) {
+func BuildImage(dockerfile string, imageName string) error {
 	ctx := context.Background()
 	dockerClient, err := client.NewEnvClient()
 	if err != nil {
 		log.Fatalf("Unable to init client: %s\n", err.Error())
-		return types.ImageBuildResponse{}, err
+		return err
 	}
 	dockerfile, _ = homedir.Expand(dockerfile)
 	dir := path.Dir(dockerfile)
 	dockerfile = path.Base(dockerfile)
 	buildContext, err := getBuildContext(dir)
 	if err != nil {
-		return types.ImageBuildResponse{}, err
+		return err
 	}
 
 	cleanedName := strings.ToLower(strings.TrimSpace(imageName))
@@ -53,38 +52,28 @@ func BuildImage(dockerfile string, imageName string) (types.ImageBuildResponse, 
 	})
 	if err != nil {
 		log.Fatalf("Failed to build docker image: %s\n", err.Error())
-		return resp, err
+		return err
 	}
 
-	termFd, isTerm := term.GetFdInfo(os.Stderr)
-	jsonmessage.DisplayJSONMessagesStream(resp.Body, os.Stderr, termFd, isTerm, tagImage)
-
-	return resp, nil
+	return readStreamForStatus(resp.Body)
 }
 
-func tagImage(aux *json.RawMessage) {
-	var result types.BuildResult
-	if err := json.Unmarshal(*aux, &result); err != nil {
-		log.Fatalf("Failed to unmarshal aux message. Cause: %s", err)
-	}
-	log.Printf("result.ID: %s\n", result.ID)
-}
+func readStreamForStatus(daemonStream io.ReadCloser) error {
+	defer daemonStream.Close()
 
-func parseDockerDaemonJSONMessages(daemonMessage io.Reader) (types.BuildResult, error) {
-	decoder := json.NewDecoder(daemonMessage)
-	var jsonMessage jsonmessage.JSONMessage
-	if err := decoder.Decode(&jsonMessage); err != nil {
-		return types.BuildResult{}, err
+	decoder := json.NewDecoder(daemonStream)
+	for {
+		var jsonMessage jsonmessage.JSONMessage
+		if err := decoder.Decode(&jsonMessage); err != nil {
+			if err == io.EOF {
+				break
+			}
+			log.Printf("Error reading docker daemon messages: %s\n", err.Error())
+			return err
+		}
+		if jsonMessage.Error != nil {
+			return errors.New(jsonMessage.ErrorMessage)
+		}
 	}
-	if err := jsonMessage.Error; err != nil || jsonMessage.Aux == nil {
-		log.Print("Incorrectly formatted json")
-		log.Print(jsonMessage.Status)
-		return types.BuildResult{}, err
-	}
-	var result types.BuildResult
-	if err := json.Unmarshal(*jsonMessage.Aux, &result); err != nil {
-		log.Fatalf("Failed to unmarshal aux message. Cause: %s", err)
-		return types.BuildResult{}, err
-	}
-	return result, nil
+	return nil
 }
