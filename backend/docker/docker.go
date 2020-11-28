@@ -101,6 +101,13 @@ func StartContainer(imageName string, uniqueID string) (*ContainerMetadata, erro
 	return &containerMetadata, nil
 }
 
+// DeleteContainer force removes container with given ID
+func DeleteContainer(containerID string) error {
+	return dockerClient.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{
+		Force: true,
+	})
+}
+
 func readStreamForStatus(daemonStream io.ReadCloser) error {
 	defer daemonStream.Close()
 
