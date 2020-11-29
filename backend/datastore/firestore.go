@@ -56,6 +56,17 @@ func AddDeployment(deployment *Deployment) error {
 	return err
 }
 
+// UpdateDeploymentStatus updates the status field on the given deployment
+func UpdateDeploymentStatus(deployment *Deployment) error {
+	_, err := client.Collection("deployments").Doc(deployment.GetName()).Update(ctx, []firestore.Update{
+		{
+			Path:  "Status",
+			Value: deployment.GetStatus(),
+		},
+	})
+	return err
+}
+
 // AddContainer adds new container to the firestore
 func AddContainer(application string, metadata *docker.ContainerMetadata) error {
 	_, err := client.Collection("containers").Doc(application).Set(ctx, metadata)
