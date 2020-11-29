@@ -3,10 +3,12 @@ package datastore
 import (
 	"context"
 	"deployed/docker"
+	"deployed/hostconfiguration"
 	"log"
 
 	"cloud.google.com/go/firestore"
 	firebase "firebase.google.com/go"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -74,4 +76,34 @@ func AddContainer(application string, metadata *docker.ContainerMetadata) error 
 		log.Fatalf("Failed adding container")
 	}
 	return err
+}
+
+// AddDomain adds new domain configuration to the firestore
+func AddDomain(application string, domainConfig *hostconfiguration.DomainConfiguration) error {
+	_, err := client.Collection("domains").Doc(application).Set(ctx, domainConfig)
+	if err != nil {
+		log.Fatalf("Failed adding domain")
+	}
+	return err
+}
+
+// GetAllDomains gets all of the domains currently tracked by Deployed
+func GetAllDomains() ([]hostconfiguration.DomainConfiguration, error) {
+	domains := []hostconfiguration.DomainConfiguration{}
+	iter := client.Collection("domains").Documents(ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return domains, err
+		}
+		rawData := doc.Data()
+		domains = append(domains, hostconfiguration.DomainConfiguration{
+			Domain: rawData["Domain"].(string),
+			Port:   rawData["Port"].(string),
+		})
+	}
+	return domains, nil
 }
