@@ -18,6 +18,7 @@ func main() {
 	docker.Connect()
 
 	r.HandleFunc("/add-deployment", routes.AddDeployment)
+	r.HandleFunc("/get-deployments", routes.GetDeployments)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},

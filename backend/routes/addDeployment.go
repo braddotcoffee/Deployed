@@ -12,6 +12,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/golang/protobuf/ptypes"
 )
 
 // AddDeployment creates a new deployment from scratch
@@ -31,6 +33,7 @@ func AddDeployment(w http.ResponseWriter, r *http.Request) {
 	if deployment.GetRepository() == "" || deployment.GetDockerfile() == "" {
 		utils.RespondWithError(w, http.StatusBadRequest, "Cannot deploy without repository and Dockerfile")
 	}
+	deployment.LastDeploy = ptypes.TimestampNow()
 	if err := datastore.AddDeployment(deployment); err != nil {
 		log.Fatalln("Failed to store deployment:", err)
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())

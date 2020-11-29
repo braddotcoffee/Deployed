@@ -69,6 +69,28 @@ func UpdateDeploymentStatus(deployment *Deployment) error {
 	return err
 }
 
+// GetAllDeployments returns an array of all deployments tracked by Deployed
+func GetAllDeployments() ([]*Deployment, error) {
+	deployments := []*Deployment{}
+	iter := client.Collection("deployments").Documents(ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return deployments, err
+		}
+		deployment := &Deployment{}
+		err = doc.DataTo(deployment)
+		if err != nil {
+			return deployments, err
+		}
+		deployments = append(deployments, deployment)
+	}
+	return deployments, nil
+}
+
 // AddContainer adds new container to the firestore
 func AddContainer(application string, metadata *docker.ContainerMetadata) error {
 	_, err := client.Collection("containers").Doc(application).Set(ctx, metadata)
