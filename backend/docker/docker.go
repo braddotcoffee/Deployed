@@ -65,10 +65,10 @@ func BuildImage(dockerfile string, imageName string, imageTag string) error {
 }
 
 // StartContainer starts a new container with the specified image
-func StartContainer(imageName string, uniqueID string) (*ContainerMetadata, error) {
+func StartContainer(imageName string, imageTag string, uniqueID string) (*ContainerMetadata, error) {
 	cleanedName := cleanImageName(imageName)
 	containerConfig := container.Config{
-		Image: cleanedName,
+		Image: cleanedName + ":" + imageTag,
 	}
 	hostConfig := container.HostConfig{
 		PublishAllPorts: true,

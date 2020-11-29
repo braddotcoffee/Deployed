@@ -2,9 +2,8 @@ package main
 
 import (
 	"deployed/datastore"
-	"deployed/utils"
-	"encoding/json"
-	"io/ioutil"
+	"deployed/docker"
+	"deployed/routes"
 	"log"
 	"net/http"
 	"os"
@@ -16,8 +15,9 @@ import (
 func main() {
 	r := mux.NewRouter()
 	datastore.Connect()
+	docker.Connect()
 
-	r.HandleFunc("/add-deployment", addDeployment)
+	r.HandleFunc("/add-deployment", routes.AddDeployment)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},
@@ -30,23 +30,4 @@ func main() {
 	}
 
 	log.Fatal(srv.ListenAndServe())
-}
-
-func addDeployment(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatalln("Failed to read body of request:", err)
-		utils.RespondWithError(w, http.StatusBadRequest, "Unable to read body of request")
-	}
-
-	deployment := &datastore.Deployment{}
-	if err := json.Unmarshal(body, deployment); err != nil {
-		log.Fatalln("Failed to parse deployment:", err)
-		utils.RespondWithError(w, http.StatusBadRequest, "Unable to parse deployment")
-	}
-	if err := datastore.AddDeployment(deployment); err != nil {
-		log.Fatalln("Failed to store deployment:", err)
-		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
-	}
-	w.WriteHeader(http.StatusOK)
 }

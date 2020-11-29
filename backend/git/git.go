@@ -77,6 +77,12 @@ func PullRepoAtLocation(location string) (string, error) {
 	return getHeadHash(repository)
 }
 
+// GetRepoLocation returns the absolute path to a repository
+// base given the application name
+func GetRepoLocation(application string) string {
+	return repositoryLocationBase + application + "/"
+}
+
 func getHeadHash(repository *git.Repository) (string, error) {
 	head, err := repository.Head()
 	if err != nil {

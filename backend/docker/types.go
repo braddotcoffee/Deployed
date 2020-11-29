@@ -15,10 +15,16 @@ type ContainerMetadata struct {
 }
 
 func (metadata ContainerMetadata) String() string {
+	hostIP := "<none>"
+	hostPort := "<none>"
+	if metadata.Port != nil {
+		hostIP = metadata.Port.HostIP
+		hostPort = metadata.Port.HostPort
+	}
 	return fmt.Sprintf(`
 	ContainerMetadata{
 		ID: %s,
 		Name: %s,
 		Port: %s:%s
-	}`, metadata.ID, metadata.Name, metadata.Port.HostIP, metadata.Port.HostPort)
+	}`, metadata.ID, metadata.Name, hostIP, hostPort)
 }
