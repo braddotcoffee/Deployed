@@ -23,7 +23,7 @@ export class PreviewDeploymentsComponent implements OnInit {
       this.deployments.forEach(deployment => {
         this.githubUrls.set(deployment.getName(), this.deploymentService.getGithubUrl(deployment));
         this.icons.set(deployment.getName(), this.deploymentService.getIcon(deployment));
-      })
+      });
     });
   }
 }

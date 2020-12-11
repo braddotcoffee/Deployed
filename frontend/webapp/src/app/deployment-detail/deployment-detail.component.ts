@@ -10,9 +10,9 @@ import { DeploymentService } from '../services/deployment.service';
 })
 export class DeploymentDetailComponent implements OnInit {
   deployment: Deployment | undefined;
-  githubUrl: string = "";
-  icon: string = "";
-  complete: boolean = false;
+  githubUrl = '';
+  icon = '';
+  complete = false;
 
   constructor(private deploymentService: DeploymentService, private route: ActivatedRoute) { }
 
@@ -21,14 +21,18 @@ export class DeploymentDetailComponent implements OnInit {
   }
 
   getDeployment(): void {
-    const name = this.route.snapshot.paramMap.get('name')!;
+    const name = this.route.snapshot.paramMap.get('name');
+    if (name === null) {
+      this.complete = true;
+      return;
+    }
     this.deploymentService.getDeployment(name).subscribe(deployment => {
       this.deployment = deployment;
       this.githubUrl = this.deploymentService.getGithubUrl(deployment);
       this.icon = this.deploymentService.getIcon(deployment);
       this.complete = true;
-    }, error => {
+    }, _ => {
       this.complete = true;
-    })
+    });
   }
 }
