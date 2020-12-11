@@ -4,6 +4,9 @@ package hostconfiguration
 // directly by Deployed that must be maintained
 var DefaultDomains []DomainConfiguration = []DomainConfiguration{
 	DomainConfiguration{
+		Domain: "brad.coffee",
+	},
+	DomainConfiguration{
 		Domain: "code.brad.coffee",
 		Port:   "2212",
 	},

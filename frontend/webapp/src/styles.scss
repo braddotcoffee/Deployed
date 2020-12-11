@@ -1,4 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
+@use './_variables'as globals;
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 div.container {
@@ -13,6 +14,68 @@ div.flexbox {
   justify-content: center;
 }
 
+div.flexbox-right {
+  display: flex;
+  margin-left: auto;
+}
+
 body {
   margin: 0px;
+}
+
+.centered {
+  margin: auto;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+div.error-message {
+  color: red;
+  background-color: adjust-color($color: red, $lightness: 40%);
+  padding: 1em 2em;
+  display: flex;
+  align-items: center;
+}
+
+div.error-message>span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+  margin-left: 0.3em;
+  font-size: 16px;
+}
+
+mat-card.deployment-preview {
+  margin-bottom: 1em;
+  max-width: 50%;
+}
+
+mat-card-header {
+  border-bottom: 1px solid globals.$primary;
+  margin-bottom: 1em;
+}
+
+.commit {
+  background-color: globals.$highlight;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  display: inline-flex;
+  align-items: center;
+  height: 70%;
+  border-radius: 3px;
+}
+
+span.commit>a:hover {
+  text-decoration: underline;
+}
+
+mat-icon {
+  font-size: 22px;
+  margin-right: 0.2em;
+}
+
+a {
+  text-decoration: none;
 }

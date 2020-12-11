@@ -21,6 +21,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { PreviewDeploymentsComponent } from './preview-deployments/preview-deployments.component';
+import { DeploymentDetailComponent } from './deployment-detail/deployment-detail.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 
 
@@ -31,7 +34,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     StepperFormInputComponent,
     StepperFormStepComponent,
     StepperFormComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    PreviewDeploymentsComponent,
+    DeploymentDetailComponent
   ],
   imports: [
     BrowserModule,
@@ -48,6 +53,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatIconModule,
     MatTableModule,
     MatToolbarModule,
+    MatProgressSpinnerModule,
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]

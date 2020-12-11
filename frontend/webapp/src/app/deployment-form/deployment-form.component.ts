@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { StepperFormInput, StepperFormStep } from 'src/app/forms/stepper-forms/stepper-form-types';
 import { Deployment } from 'src/types/deployment_pb';
-import { DeploymentService } from '../deployment.service';
+import { DeploymentService } from '../services/deployment.service';
 
 @Component({
   selector: 'app-deployment-form',
@@ -18,7 +19,7 @@ export class DeploymentFormComponent implements OnInit {
 
   steps: StepperFormStep[] = [];
 
-  constructor(private formBuilder: FormBuilder, private deploymentService: DeploymentService) { }
+  constructor(private formBuilder: FormBuilder, private deploymentService: DeploymentService, private router: Router) { }
 
   ngOnInit(): void {
     this.nameFormGroup = this.formBuilder.group({
@@ -79,5 +80,6 @@ export class DeploymentFormComponent implements OnInit {
     this.deployment.setDockerfile(this.dockerfileFormGroup.get('dockerfile')?.value);
     this.deployment.setDomain(this.domainFormGroup.get('domain')?.value);
     this.deploymentService.addDeployment(this.deployment);
+    this.router.navigate(['/preview-deployments']);
   }
 }

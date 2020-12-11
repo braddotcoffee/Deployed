@@ -39,7 +39,7 @@ func CloneRepoToLocation(repository string, location string) (string, error) {
 	})
 	repo, err := git.PlainOpen(location)
 	if err != nil {
-		log.Fatalf("Failed to open git path: %s\n", err.Error())
+		log.Printf("Failed to open git path: %s\n", err.Error())
 		return "", err
 	}
 	return getHeadHash(repo)

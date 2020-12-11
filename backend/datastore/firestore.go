@@ -58,6 +58,17 @@ func AddDeployment(deployment *Deployment) error {
 	return err
 }
 
+// UpdateDeploymentCommit updates the commit field on the given deployment
+func UpdateDeploymentCommit(deployment *Deployment) error {
+	_, err := client.Collection("deployments").Doc(deployment.GetName()).Update(ctx, []firestore.Update{
+		{
+			Path:  "Commit",
+			Value: deployment.GetCommit(),
+		},
+	})
+	return err
+}
+
 // UpdateDeploymentStatus updates the status field on the given deployment
 func UpdateDeploymentStatus(deployment *Deployment) error {
 	_, err := client.Collection("deployments").Doc(deployment.GetName()).Update(ctx, []firestore.Update{
@@ -72,7 +83,7 @@ func UpdateDeploymentStatus(deployment *Deployment) error {
 // GetAllDeployments returns an array of all deployments tracked by Deployed
 func GetAllDeployments() ([]*Deployment, error) {
 	deployments := []*Deployment{}
-	iter := client.Collection("deployments").Documents(ctx)
+	iter := client.Collection("deployments").OrderBy("LastDeploy", firestore.Desc).Documents(ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -89,6 +100,23 @@ func GetAllDeployments() ([]*Deployment, error) {
 		deployments = append(deployments, deployment)
 	}
 	return deployments, nil
+}
+
+// GetDeploymentByName gets the deployment corresponding to the given name
+func GetDeploymentByName(name string) (*Deployment, error) {
+	doc, err := client.Collection("deployments").Doc(name).Get(ctx)
+	if err != nil {
+		log.Printf("Failed to get deployment with name %s: %s\n", name, err.Error())
+		return nil, err
+	}
+
+	deployment := &Deployment{}
+	err = doc.DataTo(deployment)
+	if err != nil {
+		log.Printf("Failed to parse document into deployment: %s\n", err.Error())
+		return nil, err
+	}
+	return deployment, nil
 }
 
 // AddContainer adds new container to the firestore

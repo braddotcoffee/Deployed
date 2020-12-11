@@ -45,9 +45,20 @@ func AddDeployment(w http.ResponseWriter, r *http.Request) {
 }
 
 func initializeDeployment(deployment *datastore.Deployment) {
+	deployment.Status = datastore.Deployment_IN_PROGRESS
+	datastore.UpdateDeploymentStatus(deployment)
+
 	hash, err := git.CloneRepoToLocation(deployment.GetRepository(), deployment.GetName())
 	if err != nil {
 		failDeployment("Failed to clone repo", err, deployment)
+		return
+	}
+
+	deployment.Commit = hash
+
+	err = datastore.UpdateDeploymentCommit(deployment)
+	if err != nil {
+		failDeployment("Failed to store current commit", err, deployment)
 		return
 	}
 
@@ -103,4 +114,7 @@ func initializeDeployment(deployment *datastore.Deployment) {
 		failDeployment("Failed to update certificate", err, deployment)
 		return
 	}
+
+	deployment.Status = datastore.Deployment_COMPLETE
+	datastore.UpdateDeploymentStatus(deployment)
 }

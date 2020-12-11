@@ -14,7 +14,5 @@ func GetDeployments(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Failed to get deployments: %s\n", err.Error())
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve deployments")
 	}
-	utils.RespondWithJSON(w, http.StatusOK, map[string]interface{}{
-		"Deployments": deployments,
-	})
+	utils.RespondWithJSON(w, http.StatusOK, deployments)
 }

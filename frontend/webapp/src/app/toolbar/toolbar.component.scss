@@ -1,3 +1,16 @@
+@use '../../_variables'as globals;
+
 mat-toolbar {
-  margin-bottom: 2em;
+  margin-bottom: 2em !important;
+}
+
+mat-toolbar>a {
+  color: white;
+  text-decoration: none;
+  padding: 0.75em;
+}
+
+mat-toolbar>a:hover {
+  background-color: adjust-color($color: globals.$primary, $lightness: -5%);
+  color: adjust-color($color: white, $lightness: -5%);
 }

@@ -19,6 +19,7 @@ func main() {
 
 	r.HandleFunc("/add-deployment", routes.AddDeployment)
 	r.HandleFunc("/get-deployments", routes.GetDeployments)
+	r.HandleFunc("/get-deployment", routes.GetDeployment)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},

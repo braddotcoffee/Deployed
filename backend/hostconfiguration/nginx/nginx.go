@@ -40,6 +40,9 @@ func buildPortForwardSection(domain string, port string) string {
 func BuildSitesEnabled(domains []hostconfiguration.DomainConfiguration) string {
 	fileContents := buildFileForwardSection()
 	for _, domainConfig := range domains {
+		if domainConfig.Port == "" {
+			continue
+		}
 		fileContents += buildPortForwardSection(domainConfig.Domain, domainConfig.Port)
 	}
 	return fileContents
