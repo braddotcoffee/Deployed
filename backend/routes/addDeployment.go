@@ -5,8 +5,6 @@ import (
 	"deployed/docker"
 	"deployed/git"
 	"deployed/hostconfiguration"
-	"deployed/hostconfiguration/certbot"
-	"deployed/hostconfiguration/nginx"
 	"deployed/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -95,24 +93,9 @@ func initializeDeployment(deployment *datastore.Deployment) {
 		return
 	}
 
-	deployedDomains, err := datastore.GetAllDomains()
+	err = updateNetworkConfigs()
 	if err != nil {
-		failDeployment("Failed to get all domains", err, deployment)
-		return
-	}
-
-	allDomains := append(hostconfiguration.DefaultDomains, deployedDomains...)
-	sitesEnabled := nginx.BuildSitesEnabled(allDomains)
-	err = utils.WriteExistingFile("/etc/nginx/sites-enabled/brad.coffee", sitesEnabled)
-	if err != nil {
-		failDeployment("Failed to write nginx conf", err, deployment)
-		return
-	}
-
-	err = certbot.UpdateCertificates(allDomains)
-	if err != nil {
-		failDeployment("Failed to update certificate", err, deployment)
-		return
+		failDeployment("Failed to update network configs", err, deployment)
 	}
 
 	deployment.Status = datastore.Deployment_COMPLETE

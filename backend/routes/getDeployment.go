@@ -19,7 +19,7 @@ func GetDeployment(w http.ResponseWriter, r *http.Request) {
 	deployment, err := datastore.GetDeploymentByName(deploymentName)
 	if err != nil {
 		log.Print("Failed to get deployment")
-		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to retrieve deployment with name "+deploymentName)
+		utils.RespondWithError(w, http.StatusNotFound, "Failed to retrieve deployment with name "+deploymentName)
 	}
 	utils.RespondWithJSON(w, http.StatusOK, deployment)
 }

@@ -20,6 +20,7 @@ func main() {
 	r.HandleFunc("/add-deployment", routes.AddDeployment)
 	r.HandleFunc("/get-deployments", routes.GetDeployments)
 	r.HandleFunc("/get-deployment", routes.GetDeployment)
+	r.HandleFunc("/update-network-config", routes.UpdateNetworkConfigs)
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},
