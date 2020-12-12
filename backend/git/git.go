@@ -13,12 +13,12 @@ var repositoryLocationBase = "/root/DeployedRepos/"
 
 func getPublicKeys() (*ssh.PublicKeys, error) {
 	if _, err := os.Stat(privateKeyFile); err != nil {
-		log.Fatalf("Failed to find private key file: %s\n", err.Error())
+		log.Printf("Failed to find private key file: %s\n", err.Error())
 		return nil, err
 	}
 	publicKeys, err := ssh.NewPublicKeysFromFile("git", privateKeyFile, "")
 	if err != nil {
-		log.Fatalf("generate publickeys failed: %s\n", err.Error())
+		log.Printf("generate publickeys failed: %s\n", err.Error())
 		return nil, err
 	}
 	return publicKeys, nil
@@ -45,18 +45,19 @@ func CloneRepoToLocation(repository string, location string) (string, error) {
 	return getHeadHash(repo)
 }
 
-// PullRepoAtLocation pulls latest changes from git repo
+// PullRepoAtLocation pulls latest changes from git repo.
+// Returns the most recent commit hash from that repo
 func PullRepoAtLocation(location string) (string, error) {
 	location = repositoryLocationBase + location
 	repository, err := git.PlainOpen(location)
 	if err != nil {
-		log.Fatalf("Failed to open git path: %s\n", err.Error())
+		log.Printf("Failed to open git path: %s\n", err.Error())
 		return "", err
 	}
 
 	worktree, err := repository.Worktree()
 	if err != nil {
-		log.Fatalf("Failed to get worktree for repo: %s\n", err.Error())
+		log.Printf("Failed to get worktree for repo: %s\n", err.Error())
 		return "", err
 	}
 

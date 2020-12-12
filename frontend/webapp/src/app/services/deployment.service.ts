@@ -29,7 +29,11 @@ export class DeploymentService {
   getDeployment(name: string): Observable<Deployment> {
     return this.http.get<any>(`${environment.backendUrl}/get-deployment?name=${name}`).pipe(
       map(this.deploymentFromObject)
-    )
+    );
+  }
+
+  deployNewVersion(name: string): Observable<any> {
+    return this.http.get(`${environment.backendUrl}/deploy-new-version?name=${name}`);
   }
 
   readableStatus(deployment: Deployment): string {

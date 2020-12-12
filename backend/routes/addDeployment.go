@@ -2,9 +2,7 @@ package routes
 
 import (
 	"deployed/datastore"
-	"deployed/docker"
 	"deployed/git"
-	"deployed/hostconfiguration"
 	"deployed/utils"
 	"encoding/json"
 	"io/ioutil"
@@ -52,52 +50,5 @@ func initializeDeployment(deployment *datastore.Deployment) {
 		return
 	}
 
-	deployment.Commit = hash
-
-	err = datastore.UpdateDeploymentCommit(deployment)
-	if err != nil {
-		failDeployment("Failed to store current commit", err, deployment)
-		return
-	}
-
-	dockerfileLocation := git.GetRepoLocation(deployment.GetName()) + deployment.GetDockerfile()
-	err = docker.BuildImage(dockerfileLocation, deployment.GetName(), hash)
-	if err != nil {
-		failDeployment("Failed to build image", err, deployment)
-		return
-	}
-
-	metadata, err := docker.StartContainer(deployment.GetName(), hash, hash)
-	if err != nil {
-		failDeployment("Failed to start container", err, deployment)
-		return
-	}
-
-	datastore.AddContainer(deployment.GetName(), metadata)
-	if err != nil {
-		failDeployment("Failed to store container", err, deployment)
-		return
-	}
-
-	if deployment.GetDomain() == "" || metadata.Port == nil {
-		return
-	}
-
-	domainConfig := &hostconfiguration.DomainConfiguration{
-		Domain: deployment.GetDomain(),
-		Port:   metadata.Port.HostPort,
-	}
-	err = datastore.AddDomain(deployment.GetName(), domainConfig)
-	if err != nil {
-		failDeployment("Failed to add domain", err, deployment)
-		return
-	}
-
-	err = updateNetworkConfigs()
-	if err != nil {
-		failDeployment("Failed to update network configs", err, deployment)
-	}
-
-	deployment.Status = datastore.Deployment_COMPLETE
-	datastore.UpdateDeploymentStatus(deployment)
+	deployCommit(deployment, hash)
 }

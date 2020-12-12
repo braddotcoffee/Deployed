@@ -2,6 +2,9 @@
     <div *ngIf="!complete" class="flexbox">
         <mat-spinner></mat-spinner>
     </div>
+    <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error</mat-icon><span>Unable to find deployment</span>
+    </div>
     <div *ngIf="deployment">
         <mat-card class="deployment-preview centered">
             <mat-card-header>
@@ -14,12 +17,9 @@
             <mat-card-content>
                 <b>Last Deployed:</b> {{deployment.getLastDeploy()!.toDate()}}
                 <div class="flexbox">
-                    <button mat-button color="primary" class="new-version">Deploy New Version</button>
+                    <button mat-button color="primary" class="new-version" (click)="deployNewVersion()">Deploy New Version</button>
                 </div>
             </mat-card-content>
         </mat-card>
-    </div>
-    <div *ngIf="complete && deployment === undefined" class="error-message">
-        <mat-icon>error</mat-icon><span>Unable to find deployment</span>
     </div>
 </div>

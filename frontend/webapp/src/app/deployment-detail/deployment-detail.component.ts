@@ -13,6 +13,7 @@ export class DeploymentDetailComponent implements OnInit {
   githubUrl = '';
   icon = '';
   complete = false;
+  errorMessage = '';
 
   constructor(private deploymentService: DeploymentService, private route: ActivatedRoute) { }
 
@@ -33,6 +34,17 @@ export class DeploymentDetailComponent implements OnInit {
       this.complete = true;
     }, _ => {
       this.complete = true;
+      this.errorMessage = 'Unable to find deployment';
     });
+  }
+
+  deployNewVersion(): void {
+    if (this.deployment === undefined) { return; }
+    this.deploymentService.deployNewVersion(this.deployment.getName()).subscribe(
+      _ => { },
+      err => {
+        console.log(err);
+        this.errorMessage = 'Unable to deploy new version';
+      });
   }
 }

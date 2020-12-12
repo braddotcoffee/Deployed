@@ -13,6 +13,7 @@ func GetDeployment(w http.ResponseWriter, r *http.Request) {
 	if !ok || len(keys[0]) == 0 {
 		log.Println("No deployment name specified")
 		utils.RespondWithError(w, http.StatusBadRequest, "No deployment name specified")
+		return
 	}
 	deploymentName := keys[0]
 
@@ -20,6 +21,7 @@ func GetDeployment(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print("Failed to get deployment")
 		utils.RespondWithError(w, http.StatusNotFound, "Failed to retrieve deployment with name "+deploymentName)
+		return
 	}
 	utils.RespondWithJSON(w, http.StatusOK, deployment)
 }
