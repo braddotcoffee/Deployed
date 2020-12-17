@@ -24,6 +24,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { PreviewDeploymentsComponent } from './preview-deployments/preview-deployments.component';
 import { DeploymentDetailComponent } from './deployment-detail/deployment-detail.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatMenuModule } from '@angular/material/menu';
+import { DomainConfigFormComponent } from './domain-config-form/domain-config-form.component';
 
 
 
@@ -36,7 +38,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     StepperFormComponent,
     ToolbarComponent,
     PreviewDeploymentsComponent,
-    DeploymentDetailComponent
+    DeploymentDetailComponent,
+    DomainConfigFormComponent,
   ],
   imports: [
     BrowserModule,
@@ -54,6 +57,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTableModule,
     MatToolbarModule,
     MatProgressSpinnerModule,
+    MatMenuModule,
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]

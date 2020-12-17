@@ -18,6 +18,7 @@ func main() {
 	docker.Connect()
 
 	r.HandleFunc("/add-deployment", routes.AddDeployment)
+	r.HandleFunc("/add-domain-config", routes.AddDomainConfig)
 	r.HandleFunc("/get-deployments", routes.GetDeployments)
 	r.HandleFunc("/get-deployment", routes.GetDeployment)
 	r.HandleFunc("/deploy-new-version", routes.DeployNewVersion)

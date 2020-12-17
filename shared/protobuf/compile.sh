@@ -10,4 +10,5 @@ protoc \
     --plugin="protoc-gen-ts=${PROTOC_GEN_TS_PATH}" \
     --js_out="import_style=commonjs:${TS_OUT}" \
     --ts_out="${TS_OUT}" \
-    deployment.proto 
+    deployment.proto \
+    domainConfiguration.proto

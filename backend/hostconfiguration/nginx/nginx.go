@@ -1,7 +1,7 @@
 package nginx
 
 import (
-	"deployed/hostconfiguration"
+	"deployed/datastore"
 	"fmt"
 )
 
@@ -37,7 +37,7 @@ func buildPortForwardSection(domain string, port string) string {
 
 // BuildSitesEnabled returns the nginx config file
 // to write to /etc/nginx/sites-enabled
-func BuildSitesEnabled(domains []hostconfiguration.DomainConfiguration) string {
+func BuildSitesEnabled(domains []*datastore.DomainConfiguration) string {
 	fileContents := buildFileForwardSection()
 	for _, domainConfig := range domains {
 		if domainConfig.Port == "" {

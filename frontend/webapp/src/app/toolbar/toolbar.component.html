@@ -1,5 +1,9 @@
 <mat-toolbar color="primary">
   <a routerLink="/preview-deployments"><span>Deployed</span></a>
   <span class="spacer"></span>
-  <a routerLink="/new-deployment"><mat-icon>add</mat-icon></a>
+  <button mat-button [matMenuTriggerFor]="menu"><mat-icon>add</mat-icon></button>
+  <mat-menu #menu="matMenu">
+    <a mat-menu-item routerLink="/new-deployment">New Deployment</a>
+    <a mat-menu-item routerLink="/new-domain-config">New Domain Config</a>
+  </mat-menu>
 </mat-toolbar>

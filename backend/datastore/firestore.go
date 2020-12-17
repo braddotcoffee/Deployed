@@ -3,7 +3,6 @@ package datastore
 import (
 	"context"
 	"deployed/docker"
-	"deployed/hostconfiguration"
 	"log"
 
 	"cloud.google.com/go/firestore"
@@ -129,7 +128,7 @@ func AddContainer(application string, metadata *docker.ContainerMetadata) error 
 }
 
 // AddDomain adds new domain configuration to the firestore
-func AddDomain(application string, domainConfig *hostconfiguration.DomainConfiguration) error {
+func AddDomain(application string, domainConfig *DomainConfiguration) error {
 	_, err := client.Collection("domains").Doc(application).Set(ctx, domainConfig)
 	if err != nil {
 		log.Fatalf("Failed adding domain")
@@ -138,8 +137,8 @@ func AddDomain(application string, domainConfig *hostconfiguration.DomainConfigu
 }
 
 // GetAllDomains gets all of the domains currently tracked by Deployed
-func GetAllDomains() ([]hostconfiguration.DomainConfiguration, error) {
-	domains := []hostconfiguration.DomainConfiguration{}
+func GetAllDomains() ([]*DomainConfiguration, error) {
+	domains := []*DomainConfiguration{}
 	iter := client.Collection("domains").Documents(ctx)
 	for {
 		doc, err := iter.Next()
@@ -149,11 +148,13 @@ func GetAllDomains() ([]hostconfiguration.DomainConfiguration, error) {
 		if err != nil {
 			return domains, err
 		}
-		rawData := doc.Data()
-		domains = append(domains, hostconfiguration.DomainConfiguration{
-			Domain: rawData["Domain"].(string),
-			Port:   rawData["Port"].(string),
-		})
+		domainConfiguration := &DomainConfiguration{}
+		err = doc.DataTo(domainConfiguration)
+		if err != nil {
+			log.Printf("Failed to parse document into deployment: %s\n", err.Error())
+			return nil, err
+		}
+		domains = append(domains, domainConfiguration)
 	}
 	return domains, nil
 }

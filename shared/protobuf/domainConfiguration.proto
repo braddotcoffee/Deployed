@@ -1,0 +1,9 @@
+syntax = "proto3";
+package datastore;
+
+option go_package = "backend/datastore";
+
+message DomainConfiguration {
+    string domain = 1;
+    string port = 2;
+}

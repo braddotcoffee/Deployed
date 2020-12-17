@@ -4,7 +4,6 @@ import (
 	"deployed/datastore"
 	"deployed/docker"
 	"deployed/git"
-	"deployed/hostconfiguration"
 	"deployed/hostconfiguration/certbot"
 	"deployed/hostconfiguration/nginx"
 	"deployed/utils"
@@ -68,7 +67,7 @@ func deployCommit(deployment *datastore.Deployment, commit string) error {
 		return err
 	}
 
-	domainConfig := &hostconfiguration.DomainConfiguration{
+	domainConfig := &datastore.DomainConfiguration{
 		Domain: deployment.GetDomain(),
 		Port:   metadata.Port.HostPort,
 	}
