@@ -47,7 +47,7 @@ export class DomainConfigFormComponent implements OnInit {
         inputs: [{
           label: 'Host domain',
           controlName: 'domain',
-          placeholder: 'https://some.domain.com'
+          placeholder: 'some.domain.com'
         }]
       },
       {
