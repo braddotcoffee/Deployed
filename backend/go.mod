@@ -21,6 +21,7 @@ require (
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.7.0
+	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	google.golang.org/api v0.35.0
 	google.golang.org/protobuf v1.25.0
 )

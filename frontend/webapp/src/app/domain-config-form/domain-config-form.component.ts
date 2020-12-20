@@ -24,7 +24,7 @@ export class DomainConfigFormComponent implements OnInit {
   ngOnInit(): void {
     this.nameFormGroup = this.formBuilder.group({
       name: [this.name, Validators.required]
-    })
+    });
     this.domainFormGroup = this.formBuilder.group({
       domain: [this.domainConfig.getDomain(), Validators.required]
     });

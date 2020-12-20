@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "deployed-d4c32": {
+      "hosting": {
+        "webapp": [
+          "deployed-d4c32"
+        ]
+      }
+    }
+  }
+}

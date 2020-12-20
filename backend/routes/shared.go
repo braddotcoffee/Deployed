@@ -10,14 +10,14 @@ import (
 	"log"
 )
 
-func failDeployment(msg string, err error, deployment *datastore.Deployment) {
+func failDeployment(msg string, err error, deployment *datastore.Deployment, firestoreClient *datastore.FirestoreClient) {
 	log.Printf("%s: %s\n", msg, err.Error())
 	deployment.Status = datastore.Deployment_ERROR
-	datastore.UpdateDeploymentStatus(deployment)
+	firestoreClient.UpdateDeploymentStatus(deployment)
 }
 
-func updateNetworkConfigs() error {
-	deployedDomains, err := datastore.GetAllDomains()
+func updateNetworkConfigs(firestoreClient *datastore.FirestoreClient) error {
+	deployedDomains, err := firestoreClient.GetAllDomains()
 	if err != nil {
 		return err
 	}
@@ -36,30 +36,30 @@ func updateNetworkConfigs() error {
 	return nil
 }
 
-func deployCommit(deployment *datastore.Deployment, commit string) error {
+func deployCommit(deployment *datastore.Deployment, commit string, firestoreClient *datastore.FirestoreClient) error {
 	deployment.Commit = commit
-	err := datastore.UpdateDeploymentCommit(deployment)
+	err := firestoreClient.UpdateDeploymentCommit(deployment)
 	if err != nil {
-		failDeployment("Failed to store current commit", err, deployment)
+		failDeployment("Failed to store current commit", err, deployment, firestoreClient)
 		return err
 	}
 
 	dockerfileLocation := git.GetRepoLocation(deployment.GetName()) + deployment.GetDockerfile()
 	err = docker.BuildImage(dockerfileLocation, deployment.GetName(), commit)
 	if err != nil {
-		failDeployment("Failed to build image", err, deployment)
+		failDeployment("Failed to build image", err, deployment, firestoreClient)
 		return err
 	}
 
 	metadata, err := docker.StartContainer(deployment.GetName(), commit, commit)
 	if err != nil {
-		failDeployment("Failed to start container", err, deployment)
+		failDeployment("Failed to start container", err, deployment, firestoreClient)
 		return err
 	}
 
-	datastore.AddContainer(deployment.GetName(), metadata)
+	firestoreClient.AddContainer(deployment.GetName(), metadata)
 	if err != nil {
-		failDeployment("Failed to store container", err, deployment)
+		failDeployment("Failed to store container", err, deployment, firestoreClient)
 		return err
 	}
 
@@ -71,19 +71,24 @@ func deployCommit(deployment *datastore.Deployment, commit string) error {
 		Domain: deployment.GetDomain(),
 		Port:   metadata.Port.HostPort,
 	}
-	err = datastore.AddDomain(deployment.GetName(), domainConfig)
+	err = firestoreClient.AddDomain(deployment.GetName(), domainConfig)
 	if err != nil {
-		failDeployment("Failed to add domain", err, deployment)
+		failDeployment("Failed to add domain", err, deployment, firestoreClient)
 		return err
 	}
 
-	err = updateNetworkConfigs()
+	err = updateNetworkConfigs(firestoreClient)
 	if err != nil {
-		failDeployment("Failed to update network configs", err, deployment)
+		failDeployment("Failed to update network configs", err, deployment, firestoreClient)
 		return err
 	}
 
 	deployment.Status = datastore.Deployment_COMPLETE
-	datastore.UpdateDeploymentStatus(deployment)
+	firestoreClient.UpdateDeploymentStatus(deployment)
 	return nil
+}
+
+func updateNetworkConfigsAndClose(firestoreClient *datastore.FirestoreClient) {
+	updateNetworkConfigs(firestoreClient)
+	firestoreClient.Close()
 }

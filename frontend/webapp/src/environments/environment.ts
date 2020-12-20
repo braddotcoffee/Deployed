@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  backendUrl: 'https://api.brad.coffee'
+  backendUrl: 'https://api.brad.coffee',
 };
 
 /*

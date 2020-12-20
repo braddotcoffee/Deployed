@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -26,6 +26,10 @@ import { DeploymentDetailComponent } from './deployment-detail/deployment-detail
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { DomainConfigFormComponent } from './domain-config-form/domain-config-form.component';
+import { HeaderInterceptorService } from './services/header-interceptor.service';
+import { AngularFireModule } from '@angular/fire';
+import { LoginComponent } from './login/login.component';
+import { firebaseConfig } from 'src/secrets/firebaseConfig';
 
 
 
@@ -40,6 +44,7 @@ import { DomainConfigFormComponent } from './domain-config-form/domain-config-fo
     PreviewDeploymentsComponent,
     DeploymentDetailComponent,
     DomainConfigFormComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,8 +63,16 @@ import { DomainConfigFormComponent } from './domain-config-form/domain-config-fo
     MatToolbarModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    AngularFireModule.initializeApp(firebaseConfig),
   ],
-  providers: [HttpClientModule],
+  providers: [
+    HttpClientModule,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HeaderInterceptorService,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

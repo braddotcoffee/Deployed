@@ -11,18 +11,23 @@ import (
 	"google.golang.org/api/option"
 )
 
-var client *firestore.Client = nil
-var ctx context.Context = nil
+// FirestoreClient wraps all interactions with the firestore
+type FirestoreClient struct {
+	client *firestore.Client
+	ctx    context.Context
+}
 
 // NewFirestoreClient opens a new connection to the
 // Firestore associated with Deployed
-func newFirestoreClient() (*firestore.Client, context.Context, error) {
+func newFirestoreClient(tokenSource *FirebaseTokenSource) (*firestore.Client, context.Context, error) {
 	// Use a service account
 	ctx := context.Background()
-	sa := option.WithCredentialsFile("secrets/server-token.json")
-	app, err := firebase.NewApp(ctx, nil, sa)
+	creds := option.WithTokenSource(tokenSource)
+	app, err := firebase.NewApp(ctx, &firebase.Config{
+		ProjectID: "deployed-d4c32",
+	}, creds)
 	if err != nil {
-		log.Fatalln(err)
+		log.Printf("Failed to connect to firestore: %s\n", err.Error())
 		return nil, nil, err
 	}
 
@@ -30,27 +35,30 @@ func newFirestoreClient() (*firestore.Client, context.Context, error) {
 	return client, ctx, err
 }
 
-// Connect establishes connection to firebase
-func Connect() error {
-	var err error
-	client, ctx, err = newFirestoreClient()
-	if err != nil {
-		log.Fatalln(err)
-		return err
+// Connect establishes a new firestore client
+func Connect(token string) (*FirestoreClient, error) {
+	tokenSource := &FirebaseTokenSource{
+		token: token,
 	}
-	return nil
+	client, ctx, err := newFirestoreClient(tokenSource)
+	if err != nil {
+		log.Printf("Failed to connect to firestore: %s\n", err.Error())
+		return nil, err
+	}
+	return &FirestoreClient{
+		client: client,
+		ctx:    ctx,
+	}, nil
 }
 
-// Disconnect closes connection to firebase
-func Disconnect() {
-	client.Close()
-	client = nil
-	ctx = nil
+// Close all sessions to firebase for client
+func (fc FirestoreClient) Close() {
+	fc.client.Close()
 }
 
 // AddDeployment adds new deployment to the firestore
-func AddDeployment(deployment *Deployment) error {
-	_, err := client.Collection("deployments").Doc(deployment.GetName()).Set(ctx, deployment)
+func (fc FirestoreClient) AddDeployment(deployment *Deployment) error {
+	_, err := fc.client.Collection("deployments").Doc(deployment.GetName()).Set(fc.ctx, deployment)
 	if err != nil {
 		log.Fatalf("Failed adding new deployment")
 	}
@@ -58,8 +66,8 @@ func AddDeployment(deployment *Deployment) error {
 }
 
 // UpdateDeploymentCommit updates the commit field on the given deployment
-func UpdateDeploymentCommit(deployment *Deployment) error {
-	_, err := client.Collection("deployments").Doc(deployment.GetName()).Update(ctx, []firestore.Update{
+func (fc FirestoreClient) UpdateDeploymentCommit(deployment *Deployment) error {
+	_, err := fc.client.Collection("deployments").Doc(deployment.GetName()).Update(fc.ctx, []firestore.Update{
 		{
 			Path:  "Commit",
 			Value: deployment.GetCommit(),
@@ -69,8 +77,8 @@ func UpdateDeploymentCommit(deployment *Deployment) error {
 }
 
 // UpdateDeploymentStatus updates the status field on the given deployment
-func UpdateDeploymentStatus(deployment *Deployment) error {
-	_, err := client.Collection("deployments").Doc(deployment.GetName()).Update(ctx, []firestore.Update{
+func (fc FirestoreClient) UpdateDeploymentStatus(deployment *Deployment) error {
+	_, err := fc.client.Collection("deployments").Doc(deployment.GetName()).Update(fc.ctx, []firestore.Update{
 		{
 			Path:  "Status",
 			Value: deployment.GetStatus(),
@@ -80,9 +88,9 @@ func UpdateDeploymentStatus(deployment *Deployment) error {
 }
 
 // GetAllDeployments returns an array of all deployments tracked by Deployed
-func GetAllDeployments() ([]*Deployment, error) {
+func (fc FirestoreClient) GetAllDeployments() ([]*Deployment, error) {
 	deployments := []*Deployment{}
-	iter := client.Collection("deployments").OrderBy("LastDeploy", firestore.Desc).Documents(ctx)
+	iter := fc.client.Collection("deployments").OrderBy("LastDeploy", firestore.Desc).Documents(fc.ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -102,8 +110,8 @@ func GetAllDeployments() ([]*Deployment, error) {
 }
 
 // GetDeploymentByName gets the deployment corresponding to the given name
-func GetDeploymentByName(name string) (*Deployment, error) {
-	doc, err := client.Collection("deployments").Doc(name).Get(ctx)
+func (fc FirestoreClient) GetDeploymentByName(name string) (*Deployment, error) {
+	doc, err := fc.client.Collection("deployments").Doc(name).Get(fc.ctx)
 	if err != nil {
 		log.Printf("Failed to get deployment with name %s: %s\n", name, err.Error())
 		return nil, err
@@ -119,8 +127,8 @@ func GetDeploymentByName(name string) (*Deployment, error) {
 }
 
 // AddContainer adds new container to the firestore
-func AddContainer(application string, metadata *docker.ContainerMetadata) error {
-	_, err := client.Collection("containers").Doc(application).Set(ctx, metadata)
+func (fc FirestoreClient) AddContainer(application string, metadata *docker.ContainerMetadata) error {
+	_, err := fc.client.Collection("containers").Doc(application).Set(fc.ctx, metadata)
 	if err != nil {
 		log.Fatalf("Failed adding container")
 	}
@@ -128,8 +136,8 @@ func AddContainer(application string, metadata *docker.ContainerMetadata) error 
 }
 
 // AddDomain adds new domain configuration to the firestore
-func AddDomain(application string, domainConfig *DomainConfiguration) error {
-	_, err := client.Collection("domains").Doc(application).Set(ctx, domainConfig)
+func (fc FirestoreClient) AddDomain(application string, domainConfig *DomainConfiguration) error {
+	_, err := fc.client.Collection("domains").Doc(application).Set(fc.ctx, domainConfig)
 	if err != nil {
 		log.Fatalf("Failed adding domain")
 	}
@@ -137,9 +145,9 @@ func AddDomain(application string, domainConfig *DomainConfiguration) error {
 }
 
 // GetAllDomains gets all of the domains currently tracked by Deployed
-func GetAllDomains() ([]*DomainConfiguration, error) {
+func (fc FirestoreClient) GetAllDomains() ([]*DomainConfiguration, error) {
 	domains := []*DomainConfiguration{}
-	iter := client.Collection("domains").Documents(ctx)
+	iter := fc.client.Collection("domains").Documents(fc.ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {

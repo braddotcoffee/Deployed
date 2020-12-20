@@ -1,7 +1,6 @@
 package main
 
 import (
-	"deployed/datastore"
 	"deployed/docker"
 	"deployed/routes"
 	"log"
@@ -14,7 +13,6 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	datastore.Connect()
 	docker.Connect()
 
 	r.HandleFunc("/add-deployment", routes.AddDeployment)
@@ -26,6 +24,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},
+		AllowedHeaders: []string{"Authorization"},
 	})
 	handler := c.Handler(r)
 
