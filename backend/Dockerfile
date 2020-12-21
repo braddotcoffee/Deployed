@@ -1,8 +1,8 @@
 FROM golang:1.14
 
 RUN mkdir -p /root/.ssh
-ADD ./secrets/id_rsa /root/.ssh
-ADD ./secrets/id_rsa.pub /root/.ssh
+COPY ./secrets/id_rsa /root/.ssh
+COPY ./secrets/id_rsa.pub /root/.ssh
 
 RUN mkdir /app
 ADD . /app
