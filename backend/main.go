@@ -21,8 +21,16 @@ func main() {
 	r.HandleFunc("/deploy-new-version", routes.DeployNewVersion)
 	r.HandleFunc("/update-network-config", routes.UpdateNetworkConfigs)
 
+	frontendURL := ""
+
+	if prod := os.Getenv("PRODUCTION"); prod != "" {
+		frontendURL = "https://deployed.brad.coffee"
+	} else {
+		frontendURL = "https://app.brad.coffee"
+	}
+
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"https://app.brad.coffee"},
+		AllowedOrigins: []string{frontendURL},
 		AllowedHeaders: []string{"Authorization", "Content-Type"},
 	})
 	handler := c.Handler(r)
