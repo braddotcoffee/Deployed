@@ -14,3 +14,11 @@ mat-toolbar>a:hover {
   background-color: adjust-color($color: globals.$primary, $lightness: -5%);
   color: adjust-color($color: white, $lightness: -5%);
 }
+
+@media only screen and (max-width: 768px) {
+  mat-toolbar>a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5em;
+  }
+}

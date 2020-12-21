@@ -7,6 +7,7 @@ div.container {
   margin: auto;
 }
 
+
 div.flexbox {
   display: flex;
   margin: auto;
@@ -78,4 +79,16 @@ mat-icon {
 
 a {
   text-decoration: none;
+}
+
+@media only screen and (max-width: 768px) {
+  div.container {
+    width: 100%;
+    margin: auto;
+  }
+
+  mat-card.deployment-preview {
+    margin-bottom: 2em;
+    max-width: 75%;
+  }
 }
