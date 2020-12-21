@@ -20,4 +20,6 @@ message Deployment {
     }
     DeployStatus status = 6;
     string domain = 7;
+    string build_command = 8;
+    string output_directory = 9;
 }

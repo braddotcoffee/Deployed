@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NetworkConfigService } from '../services/network-config.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ToolbarComponent implements OnInit {
 
-  constructor() { }
+  constructor(private networkConfig: NetworkConfigService) { }
 
   ngOnInit(): void {
+  }
+
+  refreshNetworkConfig(): void {
+    this.networkConfig.updateNetworkConfigs();
   }
 
 }

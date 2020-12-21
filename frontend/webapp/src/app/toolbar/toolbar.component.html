@@ -1,6 +1,11 @@
 <mat-toolbar color="primary">
   <a routerLink="/preview-deployments"><span>Deployed</span></a>
   <span class="spacer"></span>
+  <button mat-button matTooltip="Refresh network config"
+         aria-label="Button for refreshing network config"
+         (click)="refreshNetworkConfig()">
+    <mat-icon>cloud</mat-icon>
+  </button>
   <button mat-button [matMenuTriggerFor]="menu"><mat-icon>add</mat-icon></button>
   <mat-menu #menu="matMenu">
     <a mat-menu-item routerLink="/new-deployment">New Deployment</a>

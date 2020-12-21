@@ -27,6 +27,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatMenuModule } from '@angular/material/menu';
 import { DomainConfigFormComponent } from './domain-config-form/domain-config-form.component';
 import { HeaderInterceptorService } from './services/header-interceptor.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AngularFireModule } from '@angular/fire';
 import { LoginComponent } from './login/login.component';
 import { firebaseConfig } from 'src/secrets/firebaseConfig';
@@ -63,6 +64,7 @@ import { firebaseConfig } from 'src/secrets/firebaseConfig';
     MatToolbarModule,
     MatProgressSpinnerModule,
     MatMenuModule,
+    MatTooltipModule,
     AngularFireModule.initializeApp(firebaseConfig),
   ],
   providers: [

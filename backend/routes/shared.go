@@ -8,6 +8,10 @@ import (
 	"deployed/hostconfiguration/nginx"
 	"deployed/utils"
 	"log"
+	"os"
+	"os/exec"
+
+	"github.com/otiai10/copy"
 )
 
 func failDeployment(msg string, err error, deployment *datastore.Deployment, firestoreClient *datastore.FirestoreClient) {
@@ -36,16 +40,9 @@ func updateNetworkConfigs(firestoreClient *datastore.FirestoreClient) error {
 	return nil
 }
 
-func deployCommit(deployment *datastore.Deployment, commit string, firestoreClient *datastore.FirestoreClient) error {
-	deployment.Commit = commit
-	err := firestoreClient.UpdateDeploymentCommit(deployment)
-	if err != nil {
-		failDeployment("Failed to store current commit", err, deployment, firestoreClient)
-		return err
-	}
-
+func deployDockerImage(deployment *datastore.Deployment, commit string, firestoreClient *datastore.FirestoreClient) error {
 	dockerfileLocation := git.GetRepoLocation(deployment.GetName()) + deployment.GetDockerfile()
-	err = docker.BuildImage(dockerfileLocation, deployment.GetName(), commit)
+	err := docker.BuildImage(dockerfileLocation, deployment.GetName(), commit)
 	if err != nil {
 		failDeployment("Failed to build image", err, deployment, firestoreClient)
 		return err
@@ -75,6 +72,54 @@ func deployCommit(deployment *datastore.Deployment, commit string, firestoreClie
 	if err != nil {
 		failDeployment("Failed to add domain", err, deployment, firestoreClient)
 		return err
+	}
+
+	return nil
+}
+
+func deployManualBuild(deployment *datastore.Deployment, firestoreClient *datastore.FirestoreClient) error {
+	baseDir := git.GetRepoLocation(deployment.GetName())
+	cmd := exec.Command("/bin/sh", "-c", deployment.GetBuildCommand())
+	cmd.Dir = baseDir
+	cmd.Stdout = os.Stdout
+	if err := cmd.Run(); err != nil {
+		failDeployment("Failed to build application", err, deployment, firestoreClient)
+		return err
+	}
+	if err := copy.Copy(baseDir+deployment.GetOutputDirectory(), "/var/www/"+deployment.GetName()); err != nil {
+		failDeployment("Failed to copy application to nginx dir", err, deployment, firestoreClient)
+		return err
+	}
+	domainConfig := &datastore.DomainConfiguration{
+		Domain:           deployment.GetDomain(),
+		Port:             "",
+		ForwardDirectory: deployment.GetName(),
+	}
+	if err := firestoreClient.AddDomain(deployment.GetName(), domainConfig); err != nil {
+		failDeployment("Failed to add domain", err, deployment, firestoreClient)
+		return err
+	}
+	return nil
+}
+
+func deployCommit(deployment *datastore.Deployment, commit string, firestoreClient *datastore.FirestoreClient) error {
+	deployment.Commit = commit
+	err := firestoreClient.UpdateDeploymentCommit(deployment)
+	if err != nil {
+		failDeployment("Failed to store current commit", err, deployment, firestoreClient)
+		return err
+	}
+
+	if deployment.GetDockerfile() != "" {
+		if err := deployDockerImage(deployment, commit, firestoreClient); err != nil {
+			return err
+		}
+	}
+
+	if deployment.GetBuildCommand() != "" {
+		if err := deployManualBuild(deployment, firestoreClient); err != nil {
+			return err
+		}
 	}
 
 	err = updateNetworkConfigs(firestoreClient)

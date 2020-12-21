@@ -24,7 +24,7 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"https://app.brad.coffee"},
-		AllowedHeaders: []string{"Authorization"},
+		AllowedHeaders: []string{"Authorization", "Content-Type"},
 	})
 	handler := c.Handler(r)
 

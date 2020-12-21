@@ -13,12 +13,13 @@ require (
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/go-git/go-git/v5 v5.2.0
-	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
+	github.com/otiai10/copy v1.3.0
 	github.com/rs/cors v1.7.0
 	github.com/sirupsen/logrus v1.7.0
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5

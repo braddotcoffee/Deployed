@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-func buildFileForwardSection() string {
-	return `server {
-    server_name brad.coffee;
+func buildFileForwardSection(domain string, directory string) string {
+	return fmt.Sprintf(`server {
+    server_name %s;
 
-    root /var/www/brad.coffee/html;
+    root /var/www/%s;
 
     index index.html index.htm;
 
@@ -17,7 +17,7 @@ func buildFileForwardSection() string {
         try_files $uri $uri/ =404;
     }
 }
-`
+`, domain, directory)
 }
 
 func buildPortForwardSection(domain string, port string) string {
@@ -38,12 +38,16 @@ func buildPortForwardSection(domain string, port string) string {
 // BuildSitesEnabled returns the nginx config file
 // to write to /etc/nginx/sites-enabled
 func BuildSitesEnabled(domains []*datastore.DomainConfiguration) string {
-	fileContents := buildFileForwardSection()
+	fileContents := ""
 	for _, domainConfig := range domains {
-		if domainConfig.Port == "" {
+		if domainConfig.GetPort() != "" {
+			fileContents += buildPortForwardSection(domainConfig.GetDomain(), domainConfig.GetPort())
 			continue
 		}
-		fileContents += buildPortForwardSection(domainConfig.Domain, domainConfig.Port)
+		if domainConfig.GetForwardDirectory() != "" {
+			fileContents += buildFileForwardSection(domainConfig.GetDomain(), domainConfig.GetForwardDirectory())
+			continue
+		}
 	}
 	return fileContents
 }

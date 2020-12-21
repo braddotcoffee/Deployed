@@ -4,11 +4,10 @@ import (
 	"deployed/datastore"
 	"deployed/git"
 	"deployed/utils"
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/gogo/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
 )
 
@@ -16,19 +15,22 @@ import (
 // and deploys it for the first time
 func AddDeployment(w http.ResponseWriter, r *http.Request) {
 	authToken := r.Header.Get("Authorization")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatalln("Failed to read body of request:", err)
-		utils.RespondWithError(w, http.StatusBadRequest, "Unable to read body of request")
-	}
-
 	deployment := &datastore.Deployment{}
-	if err := json.Unmarshal(body, deployment); err != nil {
+	if err := jsonpb.Unmarshal(r.Body, deployment); err != nil {
 		log.Fatalln("Failed to parse deployment:", err)
 		utils.RespondWithError(w, http.StatusBadRequest, "Unable to parse deployment")
+		return
 	}
-	if deployment.GetRepository() == "" || deployment.GetDockerfile() == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Cannot deploy without repository and Dockerfile")
+	if deployment.GetRepository() == "" {
+		log.Printf("Cannot deploy without repository")
+		utils.RespondWithError(w, http.StatusBadRequest, "Cannot deploy without repository")
+		return
+	}
+
+	if deployment.GetDockerfile() == "" && deployment.GetBuildCommand() == "" {
+		log.Printf("Cannot deploy without dockerfile or build command")
+		utils.RespondWithError(w, http.StatusBadRequest, "Cannot deploy without dockerfile or build command")
+		return
 	}
 	deployment.LastDeploy = ptypes.TimestampNow()
 	firestoreClient, err := datastore.Connect(authToken)
@@ -40,6 +42,7 @@ func AddDeployment(w http.ResponseWriter, r *http.Request) {
 	if err := firestoreClient.AddDeployment(deployment); err != nil {
 		log.Fatalln("Failed to store deployment:", err)
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	go initializeDeployment(deployment, firestoreClient)

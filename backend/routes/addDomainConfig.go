@@ -3,28 +3,30 @@ package routes
 import (
 	"deployed/datastore"
 	"deployed/utils"
-	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/gogo/protobuf/jsonpb"
 )
 
 // AddDomainConfig creates a new domain configuration from scratch
 // and deploys the associated app for the first time
 func AddDomainConfig(w http.ResponseWriter, r *http.Request) {
 	authToken := r.Header.Get("Authorization")
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Printf("Failed to read body of request: %s\n", err.Error())
-	}
 	domainConfig := &datastore.DomainConfiguration{}
-	if err := json.Unmarshal(body, domainConfig); err != nil {
+	if err := jsonpb.Unmarshal(r.Body, domainConfig); err != nil {
 		log.Printf("Failed to parse domain configuration: %s\n", err.Error())
 		utils.RespondWithError(w, http.StatusBadRequest, "Unable to parse domain configuration")
 	}
 
-	if domainConfig.GetDomain() == "" || domainConfig.GetPort() == "" {
-		utils.RespondWithError(w, http.StatusBadRequest, "Cannot add domain config without domain and port")
+	if domainConfig.GetDomain() == "" {
+		utils.RespondWithError(w, http.StatusBadRequest, "Cannot add domain config without domain")
+		return
+	}
+
+	if domainConfig.GetPort() == "" && domainConfig.GetForwardDirectory() == "" {
+		utils.RespondWithError(w, http.StatusBadRequest, "Cannot add domain config without port or forward directory")
+		return
 	}
 
 	keys, ok := r.URL.Query()["name"]
@@ -37,6 +39,8 @@ func AddDomainConfig(w http.ResponseWriter, r *http.Request) {
 	firestoreClient, err := datastore.Connect(authToken)
 	if err != nil {
 		log.Printf("Failed to open firestore client: %s\n", err.Error())
+		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to connect to firestore")
+		return
 	}
 	err = firestoreClient.AddDomain(applicationName, domainConfig)
 	if err != nil {

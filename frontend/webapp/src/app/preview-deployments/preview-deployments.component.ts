@@ -14,6 +14,7 @@ export class PreviewDeploymentsComponent implements OnInit {
   deployments: Deployment[] = [];
   githubUrls: Map<string, string> = new Map();
   icons: Map<string, string> = new Map();
+  errorMessage = '';
 
   constructor(private deploymentService: DeploymentService) { }
 
@@ -24,6 +25,7 @@ export class PreviewDeploymentsComponent implements OnInit {
         this.githubUrls.set(deployment.getName(), this.deploymentService.getGithubUrl(deployment));
         this.icons.set(deployment.getName(), this.deploymentService.getIcon(deployment));
       });
-    });
+    },
+      _ => this.errorMessage = 'Failed to load deployments');
   }
 }

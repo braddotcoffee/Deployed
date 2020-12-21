@@ -21,6 +21,8 @@ func GetDeployment(w http.ResponseWriter, r *http.Request) {
 	firestoreClient, err := datastore.Connect(authToken)
 	if err != nil {
 		log.Printf("Failed to open firestore client: %s\n", err.Error())
+		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to connect to firestore")
+		return
 	}
 	deployment, err := firestoreClient.GetDeploymentByName(deploymentName)
 	if err != nil {

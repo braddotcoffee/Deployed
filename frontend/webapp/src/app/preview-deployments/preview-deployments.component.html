@@ -1,4 +1,7 @@
 <div class="container">
+    <div *ngIf="errorMessage" class="error-message">
+        <mat-icon>error</mat-icon><span>{{errorMessage}}</span>
+    </div>
     <div *ngFor="let deployment of deployments" class="centered">
         <a routerLink="/deployment/{{deployment.getName()}}">
             <mat-card class="deployment-preview centered">

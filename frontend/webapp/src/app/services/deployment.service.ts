@@ -80,6 +80,8 @@ export class DeploymentService {
     deployment.setDomain(object.domain);
     deployment.setStatus(object.status);
     deployment.setCommit(object.commit);
+    deployment.setBuildCommand(object.build_command);
+    deployment.setOutputDirectory(object.output_directory);
     return deployment;
   }
 }

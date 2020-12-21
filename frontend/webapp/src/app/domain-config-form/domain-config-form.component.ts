@@ -16,6 +16,7 @@ export class DomainConfigFormComponent implements OnInit {
   nameFormGroup: FormGroup = new FormGroup({});
   domainFormGroup: FormGroup = new FormGroup({});
   portFormGroup: FormGroup = new FormGroup({});
+  forwardDirectoryFormGroup: FormGroup = new FormGroup({});
 
   steps: StepperFormStep[] = [];
 
@@ -29,8 +30,11 @@ export class DomainConfigFormComponent implements OnInit {
       domain: [this.domainConfig.getDomain(), Validators.required]
     });
     this.portFormGroup = this.formBuilder.group({
-      port: [this.domainConfig.getPort(), Validators.required]
+      port: [this.domainConfig.getPort()]
     });
+    this.forwardDirectoryFormGroup = this.formBuilder.group({
+      forwardDirectory: [this.domainConfig.getForwardDirectory()]
+    })
     this.steps = [
       {
         formGroup: this.nameFormGroup,
@@ -57,6 +61,15 @@ export class DomainConfigFormComponent implements OnInit {
           label: 'Host port',
           controlName: 'port',
           placeholder: '3000'
+        }]
+      },
+      {
+        formGroup: this.forwardDirectoryFormGroup,
+        stepLabel: 'Forward files for your project',
+        inputs: [{
+          label: 'Directory location',
+          controlName: 'forwardDirectory',
+          placeholder: '/dist'
         }]
       }
     ];

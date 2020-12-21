@@ -15,6 +15,7 @@ export class DeploymentFormComponent implements OnInit {
   nameFormGroup: FormGroup = new FormGroup({});
   repositoryFormGroup: FormGroup = new FormGroup({});
   dockerfileFormGroup: FormGroup = new FormGroup({});
+  buildCommandFormGroup: FormGroup = new FormGroup({});
   domainFormGroup: FormGroup = new FormGroup({});
 
   steps: StepperFormStep[] = [];
@@ -29,7 +30,11 @@ export class DeploymentFormComponent implements OnInit {
       repository: [this.deployment.getRepository(), Validators.required]
     });
     this.dockerfileFormGroup = this.formBuilder.group({
-      dockerfile: [this.deployment.getDockerfile(), Validators.required]
+      dockerfile: [this.deployment.getDockerfile()]
+    });
+    this.buildCommandFormGroup = this.formBuilder.group({
+      buildCommand: [this.deployment.getBuildCommand()],
+      outputDir: [''],
     });
     this.domainFormGroup = this.formBuilder.group({
       domain: [this.deployment.getDomain(), Validators.required]
@@ -63,6 +68,22 @@ export class DeploymentFormComponent implements OnInit {
         }]
       },
       {
+        formGroup: this.buildCommandFormGroup,
+        stepLabel: 'Build your project',
+        inputs: [
+          {
+            label: 'Bash command to build your project',
+            controlName: 'buildCommand',
+            placeholder: 'yarn build'
+          },
+          {
+            label: 'Output directory where build artifacts should be served from',
+            controlName: 'outputDir',
+            placeholder: '/dist'
+          }
+        ]
+      },
+      {
         formGroup: this.domainFormGroup,
         stepLabel: 'Host your project',
         inputs: [{
@@ -79,6 +100,8 @@ export class DeploymentFormComponent implements OnInit {
     this.deployment.setRepository(this.repositoryFormGroup.get('repository')?.value);
     this.deployment.setDockerfile(this.dockerfileFormGroup.get('dockerfile')?.value);
     this.deployment.setDomain(this.domainFormGroup.get('domain')?.value);
+    this.deployment.setBuildCommand(this.buildCommandFormGroup.get('buildCommand')?.value);
+    this.deployment.setOutputDirectory(this.buildCommandFormGroup.get('outputDir')?.value);
     this.deploymentService.addDeployment(this.deployment);
     this.router.navigate(['/preview-deployments']);
   }

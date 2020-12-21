@@ -16,6 +16,7 @@ func UpdateNetworkConfigs(w http.ResponseWriter, r *http.Request) {
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to connect to firestore")
 		return
 	}
+	log.Printf("Updating network config...")
 	go updateNetworkConfigsAndClose(firestoreClient)
 	w.WriteHeader(http.StatusOK)
 }
