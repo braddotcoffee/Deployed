@@ -14,7 +14,7 @@ func buildFileForwardSection(domain string, directory string) string {
     index index.html index.htm;
 
     location / {
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ /index.html;
     }
 }
 `, domain, directory)

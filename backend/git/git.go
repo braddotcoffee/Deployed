@@ -97,6 +97,18 @@ func GetRepoLocation(application string) string {
 	return repositoryLocationBase + application + "/"
 }
 
+// GetCurrentCommit gets the current commit of the repo at given location
+func GetCurrentCommit(location string) (string, error) {
+	location = repositoryLocationBase + location
+	repository, err := git.PlainOpen(location)
+	if err != nil {
+		log.Printf("Failed to open git path: %s\n", err.Error())
+		return "", err
+	}
+
+	return getHeadHash(repository)
+}
+
 func getHeadHash(repository *git.Repository) (string, error) {
 	head, err := repository.Head()
 	if err != nil {

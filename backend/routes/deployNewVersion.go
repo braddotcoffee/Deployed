@@ -39,14 +39,15 @@ func pullRepoAndDeploy(deployment *datastore.Deployment, firestoreClient *datast
 
 	commit, err := git.PullRepoAtLocation(deployment.GetName())
 	if err != nil {
-		if err.Error() == "already up-to-date" {
-			deployment.Status = datastore.Deployment_COMPLETE
-			firestoreClient.UpdateDeploymentStatus(deployment)
-			log.Printf("No new version to deploy: %s\n", deployment.GetName())
+		if err.Error() != "already up-to-date" {
+			failDeployment("Failed to pull repo at location", err, deployment, firestoreClient)
 			return
 		}
-		failDeployment("Failed to pull repo at location", err, deployment, firestoreClient)
-		return
+		commit, err = git.GetCurrentCommit(deployment.GetName())
+		if err != nil {
+			failDeployment("Failed to get current commit", err, deployment, firestoreClient)
+			return
+		}
 	}
 	deployCommit(deployment, commit, firestoreClient)
 	firestoreClient.Close()
