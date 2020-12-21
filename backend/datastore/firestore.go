@@ -60,7 +60,7 @@ func (fc FirestoreClient) Close() {
 func (fc FirestoreClient) AddDeployment(deployment *Deployment) error {
 	_, err := fc.client.Collection("deployments").Doc(deployment.GetName()).Set(fc.ctx, deployment)
 	if err != nil {
-		log.Fatalf("Failed adding new deployment")
+		log.Printf("Failed adding new deployment")
 	}
 	return err
 }
@@ -130,7 +130,7 @@ func (fc FirestoreClient) GetDeploymentByName(name string) (*Deployment, error) 
 func (fc FirestoreClient) AddContainer(application string, metadata *docker.ContainerMetadata) error {
 	_, err := fc.client.Collection("containers").Doc(application).Set(fc.ctx, metadata)
 	if err != nil {
-		log.Fatalf("Failed adding container")
+		log.Printf("Failed adding container")
 	}
 	return err
 }
@@ -139,7 +139,7 @@ func (fc FirestoreClient) AddContainer(application string, metadata *docker.Cont
 func (fc FirestoreClient) AddDomain(application string, domainConfig *DomainConfiguration) error {
 	_, err := fc.client.Collection("domains").Doc(application).Set(fc.ctx, domainConfig)
 	if err != nil {
-		log.Fatalf("Failed adding domain")
+		log.Printf("Failed adding domain")
 	}
 	return err
 }

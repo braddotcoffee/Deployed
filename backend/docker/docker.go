@@ -23,7 +23,7 @@ var ctx context.Context = nil
 func getBuildContext(buildPath string) (io.Reader, error) {
 	ctx, err := archive.TarWithOptions(buildPath, &archive.TarOptions{})
 	if err != nil {
-		log.Fatalf("Failed to tar build directory: %s\n", err.Error())
+		log.Printf("Failed to tar build directory: %s\n", err.Error())
 		return nil, err
 	}
 	return ctx, err
@@ -57,7 +57,7 @@ func BuildImage(dockerfile string, imageName string, imageTag string) error {
 		SuppressOutput: false,
 	})
 	if err != nil {
-		log.Fatalf("Failed to build docker image: %s\n", err.Error())
+		log.Printf("Failed to build docker image: %s\n", err.Error())
 		return err
 	}
 

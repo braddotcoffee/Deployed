@@ -10,13 +10,13 @@ import (
 func WriteExistingFile(filePath string, contents string) error {
 	info, err := os.Stat(filePath)
 	if err != nil {
-		log.Fatalf("Failed to stat file %s: %s", filePath, err.Error())
+		log.Printf("Failed to stat file %s: %s", filePath, err.Error())
 		return err
 	}
 
 	f, err := os.OpenFile(filePath, os.O_WRONLY|os.O_TRUNC, info.Mode())
 	if err != nil {
-		log.Fatalf("Failed to open file %s: %s", filePath, err.Error())
+		log.Printf("Failed to open file %s: %s", filePath, err.Error())
 		return err
 	}
 

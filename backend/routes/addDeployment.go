@@ -17,7 +17,7 @@ func AddDeployment(w http.ResponseWriter, r *http.Request) {
 	authToken := r.Header.Get("Authorization")
 	deployment := &datastore.Deployment{}
 	if err := jsonpb.Unmarshal(r.Body, deployment); err != nil {
-		log.Fatalln("Failed to parse deployment:", err)
+		log.Println("Failed to parse deployment:", err)
 		utils.RespondWithError(w, http.StatusBadRequest, "Unable to parse deployment")
 		return
 	}
@@ -40,7 +40,7 @@ func AddDeployment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := firestoreClient.AddDeployment(deployment); err != nil {
-		log.Fatalln("Failed to store deployment:", err)
+		log.Println("Failed to store deployment:", err)
 		utils.RespondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

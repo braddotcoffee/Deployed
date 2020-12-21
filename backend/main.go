@@ -3,7 +3,6 @@ package main
 import (
 	"deployed/docker"
 	"deployed/routes"
-	"log"
 	"net/http"
 	"os"
 
@@ -33,5 +32,5 @@ func main() {
 		Addr:    ":" + os.Getenv("PORT"),
 	}
 
-	log.Fatal(srv.ListenAndServe())
+	srv.ListenAndServe()
 }
