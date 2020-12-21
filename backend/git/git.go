@@ -70,8 +70,21 @@ func PullRepoAtLocation(location string) (string, error) {
 		RemoteName: "origin",
 		Auth:       publicKeys,
 		Progress:   os.Stdout,
+		Force:      true,
 	})
 
+	if err != nil {
+		return "", err
+	}
+	head, err := repository.Head()
+	if err != nil {
+		return "", err
+	}
+
+	err = worktree.Checkout(&git.CheckoutOptions{
+		Hash:  head.Hash(),
+		Force: true,
+	})
 	if err != nil {
 		return "", err
 	}
