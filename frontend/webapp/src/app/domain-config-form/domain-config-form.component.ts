@@ -34,7 +34,7 @@ export class DomainConfigFormComponent implements OnInit {
     });
     this.forwardDirectoryFormGroup = this.formBuilder.group({
       forwardDirectory: [this.domainConfig.getForwardDirectory()]
-    })
+    });
     this.steps = [
       {
         formGroup: this.nameFormGroup,
@@ -78,6 +78,7 @@ export class DomainConfigFormComponent implements OnInit {
   onSubmit(): void {
     this.domainConfig.setDomain(this.domainFormGroup.get('domain')?.value);
     this.domainConfig.setPort(this.portFormGroup.get('port')?.value);
+    this.domainConfig.setForwardDirectory(this.forwardDirectoryFormGroup.get('forwardDirectory')?.value);
     this.name = this.nameFormGroup.get('name')?.value;
     this.domainConfigService.addDomainConfig(this.name, this.domainConfig);
     this.router.navigate(['/preview-deployments']);

@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  backendUrl: 'https://api.brad.coffee',
+  backendUrl: 'https://deployed-api.brad.coffee',
 };
