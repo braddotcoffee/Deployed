@@ -110,3 +110,6 @@ go.sum
 
 # Ignore secrets
 secrets/
+
+# Ignore deployed prod binary
+backend/deployed-api

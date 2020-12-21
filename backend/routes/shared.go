@@ -82,10 +82,17 @@ func deployManualBuild(deployment *datastore.Deployment, firestoreClient *datast
 	cmd := exec.Command("/bin/sh", "-c", deployment.GetBuildCommand())
 	cmd.Dir = baseDir
 	cmd.Stdout = os.Stdout
+	log.Println(deployment.GetBuildCommand())
 	if err := cmd.Run(); err != nil {
 		failDeployment("Failed to build application", err, deployment, firestoreClient)
 		return err
 	}
+
+	// Assume that we will deploy a domain config manually for this project
+	if deployment.GetOutputDirectory() == "" {
+		return nil
+	}
+
 	if err := copy.Copy(baseDir+deployment.GetOutputDirectory(), "/var/www/"+deployment.GetName()); err != nil {
 		failDeployment("Failed to copy application to nginx dir", err, deployment, firestoreClient)
 		return err
