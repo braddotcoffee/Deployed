@@ -66,10 +66,17 @@ func PullRepoAtLocation(location string) (string, error) {
 		return "", err
 	}
 
+	f, err := os.OpenFile("out.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Println("Could not open log file")
+		return "", err
+	}
+	defer f.Close()
+
 	err = worktree.Pull(&git.PullOptions{
 		RemoteName: "origin",
 		Auth:       publicKeys,
-		Progress:   os.Stdout,
+		Progress:   f,
 		Force:      true,
 	})
 

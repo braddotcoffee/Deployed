@@ -11,15 +11,15 @@ import (
 	"github.com/rs/cors"
 )
 
-func setLogfile() (*os.File, error) {
+func setLogfile() error {
 	f, err := os.OpenFile("out.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
-		return nil, err
+		return err
 	}
 
 	log.SetOutput(f)
-	return f, nil
+	return nil
 }
 
 func main() {
@@ -37,12 +37,10 @@ func main() {
 
 	if prod := os.Getenv("PRODUCTION"); prod != "" {
 		frontendURL = "https://deployed.brad.coffee"
-		f, err := setLogfile()
+		err := setLogfile()
 		if err != nil {
 			return
 		}
-
-		defer f.Close()
 	} else {
 		frontendURL = "https://app.brad.coffee"
 	}
